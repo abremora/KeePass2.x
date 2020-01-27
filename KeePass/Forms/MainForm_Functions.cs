@@ -400,6 +400,8 @@ namespace KeePass.Forms
 			MainAppState s = GetMainAppState();
 			ulong uif = Program.Config.UI.UIFlags;
 
+            startForm1.Visible = !s.DatabaseOpened;
+
 			if(s.DatabaseOpened && bSetModified)
 				m_docMgr.ActiveDatabase.Modified = true;
 
@@ -570,8 +572,9 @@ namespace KeePass.Forms
 				(ulong)AceUIFlags.DisableXmlReplace) == 0), m_menuToolsDbXmlRep);
 
 			UIUtil.SetEnabledFast(s.DatabaseOpened, m_tbAddEntry, m_tbFind,
-				m_tbEntryViewsDropDown, m_tbViewsShowAll, m_tbViewsShowExpired,
-				m_tbQuickFind);
+				m_tbEntryViewsDropDown, m_tbViewsShowAll, m_tbViewsShowExpired);
+
+            UIUtil.SetEnabled(m_quickFind, s.DatabaseOpened);
 
 			Image imgSave;
 			bool bEnableSave;
@@ -1267,7 +1270,7 @@ namespace KeePass.Forms
 				(int)pg.IconId);
 			if(bExpired) nIconID = (int)PwIcon.Expired;
 
-			TreeNode tn = new TreeNode(strName, nIconID, nIconID);
+			TreeNode tn = new TreeNode(strName, nIconID, nIconID);            
 			tn.Tag = pg;
 			UIUtil.SetGroupNodeToolTip(tn, pg);
 
@@ -3520,8 +3523,8 @@ namespace KeePass.Forms
 			{
 				// QuickFind must be the first choice (see e.g.
 				// the option FocusQuickFindOnUntray)
-				if(m_tbQuickFind.Visible && m_tbQuickFind.Enabled)
-					c = m_tbQuickFind.Control;
+				if(m_quickFind.Visible && m_quickFind.Enabled)
+					c = m_quickFind;
 				else if(m_lvEntries.Visible && m_lvEntries.Enabled)
 					c = m_lvEntries;
 				else if(m_tvGroups.Visible && m_tvGroups.Enabled)
@@ -3785,8 +3788,8 @@ namespace KeePass.Forms
 
 			if(bIsActive)
 			{
-				m_tbQuickFind.Items.Clear();
-				m_tbQuickFind.Text = string.Empty;
+                m_quickFind.Items.Clear();
+                m_quickFind.Text = string.Empty;
 
 				if(!bLocking)
 				{
@@ -4428,7 +4431,7 @@ namespace KeePass.Forms
 				// When changing Ctrl+E, also change the tooltip of the quick search box
 				else if(e.KeyCode == Keys.E) // Standard key for quick searches
 				{
-					ResetDefaultFocus(m_tbQuickFind.Control); // In both cases (RTF)
+					ResetDefaultFocus(m_quickFind); // In both cases (RTF)
 					bHandled = true;
 				}
 				else if(e.KeyCode == Keys.H)
@@ -5678,7 +5681,7 @@ namespace KeePass.Forms
 				if(c == null) return false;
 
 				return ((c == m_lvEntries) || (c == m_tvGroups) ||
-					(c == m_richEntryView) || (c == m_tbQuickFind.Control));
+					(c == m_richEntryView) || (c == m_quickFind));
 			}
 			catch(Exception) { Debug.Assert(false); }
 

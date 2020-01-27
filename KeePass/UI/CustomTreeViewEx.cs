@@ -87,9 +87,23 @@ namespace KeePass.UI
 			// catch(Exception) { }
 
 			ApplyOptions();
-		}
+            FontChanged += CustomTreeViewEx_FontChanged;
 
-		internal void ApplyOptions()
+            UpdateItemHeight();
+        }
+
+        private void CustomTreeViewEx_FontChanged(object sender, EventArgs e) {
+            UpdateItemHeight();
+            Refresh();
+        }
+
+     
+        private void UpdateItemHeight() {
+            double height = Font.Size <= 9.0 ? 30.0 : 16 + ((double)(Font.Size - 9) / Font.Size) * 15;
+            this.ItemHeight = (int)height;
+        }
+
+        internal void ApplyOptions()
 		{
 			this.ShowLines = Program.Config.UI.TreeViewShowLines;
 		}

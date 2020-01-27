@@ -458,9 +458,9 @@ namespace KeePass.UI
 			if(tb == null) { Debug.Assert(false); return; }
 
 			SetCueBanner(tb.Handle, strText);
-		}
+		}  
 
-		public static void SetCueBanner(ToolStripTextBox tb, string strText)
+        public static void SetCueBanner(ToolStripTextBox tb, string strText)
 		{
 			if(tb == null) { Debug.Assert(false); return; }
 
@@ -481,7 +481,19 @@ namespace KeePass.UI
 			catch(Exception) { Debug.Assert(NativeLib.IsUnix()); }
 		}
 
-		public static Bitmap CreateScreenshot()
+        public static void SetCueBanner(ComboBox tb, string strText) {
+            try {
+                NativeMethods.COMBOBOXINFO cbi = new NativeMethods.COMBOBOXINFO();
+                cbi.cbSize = Marshal.SizeOf(cbi);
+
+                NativeMethods.GetComboBoxInfo(tb.Handle, ref cbi);
+
+                SetCueBanner(cbi.hwndEdit, strText);
+            }
+            catch (Exception) { Debug.Assert(NativeLib.IsUnix()); }
+        }
+
+        public static Bitmap CreateScreenshot()
 		{
 			return CreateScreenshot(null);
 		}

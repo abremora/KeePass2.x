@@ -94,7 +94,11 @@ namespace KeePass.UI
 			get { return (uint)m_vItems.Count; }
 		}
 
-		public bool IsValid
+        public IReadOnlyList<KeyValuePair<string, object>> Items {
+            get { return m_vItems.AsReadOnly(); }
+        }
+
+        public bool IsValid
 		{
 			get { return (m_handler != null); }
 		}

@@ -152,12 +152,12 @@ namespace KeePass.Forms
 
 			this.Text = PwDefs.ShortProductName;
 			this.Icon = AppIcons.Default;
-			m_imgFileSaveEnabled = Properties.Resources.B16x16_FileSave;
-			m_imgFileSaveDisabled = Properties.Resources.B16x16_FileSave_Disabled;
-			// m_imgFileSaveAllEnabled = Properties.Resources.B16x16_File_SaveAll;
-			// m_imgFileSaveAllDisabled = Properties.Resources.B16x16_File_SaveAll_Disabled;
+			m_imgFileSaveEnabled = Properties.Resources.floppy_48;
+			m_imgFileSaveDisabled = Properties.Resources.floppy_48;
+            // m_imgFileSaveAllEnabled = Properties.Resources.B16x16_File_SaveAll;
+            // m_imgFileSaveAllDisabled = Properties.Resources.B16x16_File_SaveAll_Disabled;
 
-			ConstructContextMenus();
+            ConstructContextMenus();
 
 			// m_ilCurrentIcons = m_ilClientIcons;
 			UpdateImageLists(true);
@@ -246,8 +246,8 @@ namespace KeePass.Forms
 			UIUtil.ConfigureTbButton(m_tbFind, KPRes.Find, null, m_menuFindInDatabase);
 			UIUtil.ConfigureTbButton(m_tbEntryViewsDropDown, null, KPRes.FindEntries, null);
 			UIUtil.ConfigureTbButton(m_tbLockWorkspace, KPRes.LockMenuLock, null, m_menuFileLock);
-			UIUtil.ConfigureTbButton(m_tbQuickFind, null, KPRes.SearchQuickPrompt +
-				" (" + KPRes.KeyboardKeyCtrl + "+E)", null);
+			//UIUtil.ConfigureTbButton(m_quickFind, null, KPRes.SearchQuickPrompt +
+			//	" (" + KPRes.KeyboardKeyCtrl + "+E)", null);
 			UIUtil.ConfigureTbButton(m_tbCloseTab, KPRes.Close, null, m_menuFileClose);
 
 			CopyMenuItemText(m_tbAddEntryDefault, m_menuEntryAdd, null);
@@ -255,7 +255,7 @@ namespace KeePass.Forms
 			CopyMenuItemText(m_tbViewsShowAll, m_menuFindAll, null);
 			CopyMenuItemText(m_tbViewsShowExpired, m_menuFindExp, null);
 
-			UIUtil.EnableAutoCompletion(m_tbQuickFind, false);
+			UIUtil.EnableAutoCompletion(m_quickFind, false);
 
 			bool bVisible = Program.Config.MainWindow.ToolBar.Show;
 			m_toolMain.Visible = bVisible;
@@ -333,6 +333,7 @@ namespace KeePass.Forms
 			UIUtil.SetChecked(m_menuViewAlwaysOnTop, mw.AlwaysOnTop);
 			EnsureAlwaysOnTopOpt();
 
+            startForm1.Init(m_mruList);
 			m_mruList.Initialize(this, m_menuFileRecent, m_menuFileSyncRecent);
 			m_mruList.MarkOpened = true;
 			SerializeMruList(false);
@@ -395,7 +396,7 @@ namespace KeePass.Forms
 
 			string strSearchTr = ((WinUtil.IsAtLeastWindowsVista ?
 				string.Empty : " ") + KPRes.Search);
-			UIUtil.SetCueBanner(m_tbQuickFind, strSearchTr);
+			UIUtil.SetCueBanner(m_quickFind, strSearchTr);
 
 #if DEBUG
 			Program.Config.CustomConfig.SetBool("TestItem1", true);
@@ -1280,7 +1281,7 @@ namespace KeePass.Forms
 			if(m_bBlockQuickFind) return;
 			m_bBlockQuickFind = true;
 
-			string strSearch = m_tbQuickFind.Text; // Text, not selected index!
+			string strSearch = m_quickFind.Text; // Text, not selected index!
 
 			lock(m_objQuickFindSync)
 			{
@@ -1304,9 +1305,9 @@ namespace KeePass.Forms
 
 			// Lookup in combobox for the current search
 			int nExistsAlready = -1;
-			for(int i = 0; i < m_tbQuickFind.Items.Count; ++i)
+			for(int i = 0; i < m_quickFind.Items.Count; ++i)
 			{
-				string strItemText = (string)m_tbQuickFind.Items[i];
+				string strItemText = (string)m_quickFind.Items[i];
 				if(strItemText.Equals(strSearch, StrUtil.CaseIgnoreCmp))
 				{
 					nExistsAlready = i;
@@ -1316,15 +1317,15 @@ namespace KeePass.Forms
 
 			// Update the history items in the combobox
 			if(nExistsAlready >= 0)
-				m_tbQuickFind.Items.RemoveAt(nExistsAlready);
-			else if(m_tbQuickFind.Items.Count >= 8)
-				m_tbQuickFind.Items.RemoveAt(m_tbQuickFind.Items.Count - 1);
+                m_quickFind.Items.RemoveAt(nExistsAlready);
+			else if(m_quickFind.Items.Count >= 8)
+                m_quickFind.Items.RemoveAt(m_quickFind.Items.Count - 1);
 
-			m_tbQuickFind.Items.Insert(0, strSearch);
+            m_quickFind.Items.Insert(0, strSearch);
 
-			// if(bDoSetText) m_tbQuickFind.Text = strSearch;
-			m_tbQuickFind.SelectedIndex = 0;
-			m_tbQuickFind.Select(0, strSearch.Length);
+            // if(bDoSetText) m_tbQuickFind.Text = strSearch;
+            m_quickFind.SelectedIndex = 0;
+            m_quickFind.Select(0, strSearch.Length);
 
 			// Asynchronous invocation allows to cleanly process
 			// an Enter keypress before blocking the UI
@@ -2940,5 +2941,25 @@ namespace KeePass.Forms
 		{
 			SetSelectedEntryExpiry(false);
 		}
-	}
+
+        private void m_toolMain_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+
+        }
+
+        private void m_tvGroups_AfterSelect(object sender, TreeViewEventArgs e) {
+
+        }
+
+        private void m_quickFind_KeyDown(object sender, KeyEventArgs e) {
+            OnQuickFindKeyDown(sender, e);
+        }
+
+        private void m_quickFind_KeyUp(object sender, KeyEventArgs e) {
+            OnQuickFindKeyUp(sender, e);
+        }
+
+        private void m_quickFind_SelectedIndexChanged(object sender, EventArgs e) {
+            OnQuickFindSelectedIndexChanged(sender, e);
+        }
+    }
 }
